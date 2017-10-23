@@ -1,7 +1,10 @@
 ﻿
 class Main {
-	private final static int CASE = 1; 
-	
+	// set 'true' if want see debugging statements
+	final static boolean DEBUG = false;
+	// set CASE num for switch statement in main
+	private final static int CASE = 2;
+
 	public static void main(String[] args) {
 		switch (CASE) {
 		case 0:
@@ -9,20 +12,25 @@ class Main {
 			SharedTextEditor editor = new SharedTextEditor();
 			SharedText t1 = SharedText.getInstance();
 			editor.open(t1);
-			editor.write("abcdefghijklmnopqrstuvwxyz", 0);
+			editor.write("abcdefghijklmnopqrstuvwxyz");
 			editor.read();
 			
 			SharedText t2 = SharedText.getInstance();
 			editor.open(t2);
 			editor.read();
-			
+
 			break;
 		case 1:
-			// Test Mutual exclusion
-			new EditSharedTextThread("abcdefghijklmnopqrstuvwxyz").start();
-			new EditSharedTextThread("ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ").start();
-			
+			// Test Mutual exclusion 'Create'
+			new EditSharedTextThread().start();
+			new EditSharedTextThread().start();
+
 			break;
+		case 2:
+			// Test Mutual exclusion 'Write'
+			new WriteSharedTextThread().start();
+			new ReadSharedTextThread().start();
+
 		default:
 		}
 	}
@@ -30,23 +38,36 @@ class Main {
 }
 
 class EditSharedTextThread extends Thread {
-	private String buf;
-
-	public EditSharedTextThread(String buf) {
-		this.buf = buf;
-	}
 
 	@Override
 	public void run() {
 		SharedTextEditor editor = new SharedTextEditor();
 		SharedText sText = SharedText.getInstance();
-		synchronized (System.out) { //Mutex System output
-			editor.open(sText);
-			editor.write(buf, 0);
-			editor.read();	
-		}
+		editor.open(sText);
 	}
 
 }
 
+class WriteSharedTextThread extends Thread {
 
+	@Override
+	public void run() {
+		SharedTextEditor editor = new SharedTextEditor();
+		SharedText sText = SharedText.getInstance();
+		editor.open(sText);
+		editor.write("abcdefghijklmnopqrstuvwxyz");
+	}
+
+}
+
+class ReadSharedTextThread extends Thread {
+
+	@Override
+	public void run() {
+		SharedTextEditor editor = new SharedTextEditor();
+		SharedText sText = SharedText.getInstance();
+		editor.open(sText);
+		editor.read();
+	}
+
+}

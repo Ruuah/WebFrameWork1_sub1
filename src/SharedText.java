@@ -14,25 +14,22 @@ public class SharedText {
 		return object;
 	}
 
-	public char getCharAt(int i) {
-		if (i >= content.length() || i < 0)
-			return 0;
-		return content.charAt(i);
+	public String getContent() {
+		synchronized (content) {
+			return content;
+		}
 	}
 
-	public void setCharAt(int i, char ch) {
-		if (i < content.length()) {
-			char[] str = content.toCharArray();
-			str[i] = ch;
-			content = String.valueOf(str);
-		} else {
-			String space = "";
-			int spaceSize = i - content.length();
-			while (spaceSize-- != 0)
-				space += " ";
-			content += space + ch;
+	public void setContent(String content) {
+		synchronized (this.content) {
+			if (Main.DEBUG)
+				System.out.println("setContent Locked!");
+				
+			this.content = content;
+
+			if (Main.DEBUG)
+				System.out.println("setContent Unlocked!");
 		}
 	}
 
 }
-
